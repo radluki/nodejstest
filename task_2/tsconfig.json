@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "baseUrl": "src",
+    "sourceMap": true,
+    "strict": true
+  },
+  "include": ["./"],
+  "exclude": ["./node_modules/", "./dist/"]
+}
