@@ -1,1 +1,0 @@
-export MOCK_DYNAMODB_ENDPOINT="dynamodb-local:8000"
