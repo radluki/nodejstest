@@ -1,4 +1,6 @@
 import { dbClient, TableNames } from "../common/db";
+import { GetItemCommand, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class Resource {
   id;
@@ -20,22 +22,27 @@ export class Resource {
   }
 
   static async tryGetById(id: string) {
-    const res = await dbClient.get({ TableName: TableNames.resources, Key: { id } }).promise();
-    return res?.Item ? new Resource(<any>res.Item) : undefined;
+    const res = await dbClient.send(
+      new GetItemCommand({
+        TableName: TableNames.resources,
+        Key: marshall({ id }),
+      }),
+    );
+    return res?.Item ? new Resource(<any>unmarshall(res.Item)) : undefined;
   }
 
   async save() {
     const params = {
       TableName: TableNames.resources,
-      Item: {
+      Item: marshall({
         id: this.id,
         value: this.value,
         group_id: this.groupId,
-      },
+      }),
     };
 
     try {
-      await dbClient.put(params).promise();
+      await dbClient.send(new PutItemCommand(params));
     } catch (error) {
       console.error("Error saving resource:", error);
       throw new Error("Error saving resource");

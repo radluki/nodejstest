@@ -56,6 +56,7 @@ export const handler = async function (event: Partial<APIGatewayEvent>) {
     const res = await dispatchEvent(validatedEvent);
     return { statusCode: res.statusCode, body: JSON.stringify(res.body) };
   } catch (error) {
+    console.error(error);
     return { statusCode: HttpStatus.INTERNAL_SERVER_ERROR, body: JSON.stringify({ error }) };
   }
 };

@@ -1,5 +1,7 @@
 import { dbClient, TableNames } from "../common/db";
 import { Role } from "./role";
+import { GetItemCommand } from "@aws-sdk/client-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class User {
   id;
@@ -21,7 +23,13 @@ export class User {
   }
 
   static async tryGetById(id: string) {
-    const res = await dbClient.get({ TableName: TableNames.users, Key: { id } }).promise();
-    return res?.Item ? new User(<any>res.Item) : undefined;
+    const res = await dbClient.send(
+      new GetItemCommand({
+        TableName: TableNames.users,
+        Key: marshall({ id }),
+      }),
+    );
+
+    return res?.Item ? new User(<any>unmarshall(res.Item)) : undefined;
   }
 }

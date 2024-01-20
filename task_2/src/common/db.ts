@@ -1,13 +1,8 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
-const dbClient = new DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10",
+const dbClient = new DynamoDBClient({
   region: "eu-west-1",
-  ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-    sslEnabled: false,
-    region: "local",
-  }),
+  endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || undefined,
 });
 
 const TableNames = {

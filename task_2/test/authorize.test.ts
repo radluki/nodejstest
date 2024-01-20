@@ -1,15 +1,11 @@
 import { handler } from "../index";
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import HttpStatus from "http-status-codes";
+import { marshall } from "@aws-sdk/util-dynamodb";
 
-const dbClient = new DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10",
+const dbClient = new DynamoDBClient({
   region: "eu-west-1",
-  ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-    sslEnabled: false,
-    region: "local",
-  }),
+  endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || undefined,
 });
 
 beforeEach(async () => {
@@ -27,47 +23,47 @@ const adminId = "1";
 const group_id = "33";
 
 async function setUpDbContent() {
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "groups",
-      Item: {
+      Item: marshall({
         id: group_id,
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "users",
-      Item: {
+      Item: marshall({
         id: adminId,
         group_id,
         role: "admin",
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "users",
-      Item: {
+      Item: marshall({
         id: guestId,
         group_id,
         role: "guest",
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "resources",
-      Item: {
+      Item: marshall({
         id: "1",
         group_id,
         value: 1,
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 }
 
 test("guest cannot patch", async () => {
@@ -121,16 +117,16 @@ test("get after admin patch increment", async () => {
 test("admin patch should not increment existing resource if groups mismatch", async () => {
   const pathParameters = { userId: adminId, resourceId: "1" };
 
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "users",
-      Item: {
+      Item: marshall({
         id: adminId,
         group_id: group_id + 1,
         role: "admin",
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 
   const { statusCode, body } = await handler({
     pathParameters,
@@ -190,16 +186,16 @@ test("get existing item with unknown user", async () => {
 });
 
 test("get existing item with group mismatch", async () => {
-  await dbClient
-    .put({
+  await dbClient.send(
+    new PutItemCommand({
       TableName: "resources",
-      Item: {
+      Item: marshall({
         id: "1",
         group_id: group_id + 1,
         value: 1,
-      },
-    })
-    .promise();
+      }),
+    }),
+  );
 
   const { statusCode, body } = await handler({
     pathParameters: { userId: guestId, resourceId: "1" },
