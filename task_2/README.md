@@ -3,6 +3,7 @@
 In this task you have to finish simple application.
 
 This application allows users to:
+
 1. Get 'resource' by id. 'resource' is an object containing some numerical value and string id. If there is no resource with id provided in request, error 404 should be returned. Every user (both ADMIN and GUEST) can do that.
 2. Update 'resource'. Update modifies value of existing resource by increasing it by one. If there is no resource. then it should be created with 0 value. Only ADMIN users can do this.
 

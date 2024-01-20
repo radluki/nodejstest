@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "jest",
+    "build": "tsc",
     "format": "prettier --write ."
   },
   "author": "Kolomolo",
@@ -27,6 +28,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "aws-sdk": "^2.1263.0"
+    "aws-sdk": "^2.1263.0",
+    "http-status-codes": "^2.3.0"
   }
 }

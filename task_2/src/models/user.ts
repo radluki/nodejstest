@@ -13,12 +13,15 @@ export class User {
   }
 
   static async getById(id: string) {
-    const res = (await dbClient.get({ TableName: TableNames.users, Key: { id } }).promise()).Item;
-
-    if (!res?.Item) {
+    const res = await this.tryGetById(id);
+    if (!res) {
       throw new Error("User does not exist");
     }
+    return res;
+  }
 
-    return new User(res.Item);
+  static async tryGetById(id: string) {
+    const res = await dbClient.get({ TableName: TableNames.users, Key: { id } }).promise();
+    return res?.Item ? new User(<any>res.Item) : undefined;
   }
 }

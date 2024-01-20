@@ -12,13 +12,33 @@ export class Resource {
   }
 
   static async getById(id: string) {
-    const res = (await dbClient.get({ TableName: TableNames.resources, Key: { id } }).promise())
-      .Item;
-
-    if (!res?.Item) {
+    const res = await this.tryGetById(id);
+    if (!res) {
       throw new Error("Resource does not exist");
     }
+    return res;
+  }
 
-    return new Resource(res.Item);
+  static async tryGetById(id: string) {
+    const res = await dbClient.get({ TableName: TableNames.resources, Key: { id } }).promise();
+    return res?.Item ? new Resource(<any>res.Item) : undefined;
+  }
+
+  async save() {
+    const params = {
+      TableName: TableNames.resources,
+      Item: {
+        id: this.id,
+        value: this.value,
+        group_id: this.groupId,
+      },
+    };
+
+    try {
+      await dbClient.put(params).promise();
+    } catch (error) {
+      console.error("Error saving resource:", error);
+      throw new Error("Error saving resource");
+    }
   }
 }
