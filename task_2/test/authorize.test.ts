@@ -180,6 +180,15 @@ test("get existing item", async () => {
   expect(JSON.parse(body)).toStrictEqual({ value: 1 });
 });
 
+test("get existing item with unknown user", async () => {
+  const { statusCode, body } = await handler({
+    pathParameters: { userId: "555", resourceId: "1" },
+    httpMethod: "GET",
+  });
+
+  expect(statusCode).toBe(HttpStatus.FORBIDDEN);
+});
+
 test("get existing item with group mismatch", async () => {
   await dbClient
     .put({
