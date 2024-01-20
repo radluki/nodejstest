@@ -7,10 +7,6 @@ export async function getResource(resourceId: string): Promise<number> {
 }
 
 export async function updateResource(resourceId: string, userId: string): Promise<number> {
-  // TODO: write update logic here
-  // resource is {resourceId: string; value: number}
-  // to update the resource, increase its value by 1
-  // if the resource does not exist yet, create it with 0 value in the user's group
   const resource = await Resource.tryGetById(resourceId);
   if (resource) {
     resource.value += 1;
