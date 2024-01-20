@@ -105,5 +105,5 @@ SNS - pub/sub service for broadcasting messages/events to multiple recipients
 AWS CloudWatch
 
 - What are Secondary Indexes in DynamoDB useful for?
-Indexes in any db are used to optimize queries.
+Indexes in any db are used to optimize queries based on attributes other than the primary key.
 They add a new data structure to the database that reduces complexity of queries based on a field that is not a primary key.
